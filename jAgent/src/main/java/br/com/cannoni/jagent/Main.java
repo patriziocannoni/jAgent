@@ -43,23 +43,28 @@ public class Main {
 			System.out.println("   [" + i + "] " + ports[i].getSystemPortName() + ": " + ports[i].getDescriptivePortName());
 		System.out.println("");
 		
-		SerialPort comPort = SerialPort.getCommPorts()[1];
-		comPort.setBaudRate(57600);
-		comPort.openPort();
-		comPort.addDataListener(new SerialPortDataListener() {
-		   @Override
-		   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
-		   @Override
-		   public void serialEvent(SerialPortEvent event)
-		   {
-		      if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-		         return;
-		      byte[] newData = new byte[comPort.bytesAvailable()];
-		      int numRead = comPort.readBytes(newData, newData.length);
-		      System.out.println("Read " + numRead + " bytes.");
-		      System.out.println(new String(newData));
-		   }
-		});
+		SerialPort[] comPorts = SerialPort.getCommPorts();
+		if (comPorts.length > 0) {
+			SerialPort comPort = comPorts[1];
+			comPort.setBaudRate(57600);
+			comPort.openPort();
+			comPort.addDataListener(new SerialPortDataListener() {
+			   @Override
+			   public int getListeningEvents() { return SerialPort.LISTENING_EVENT_DATA_AVAILABLE; }
+			   @Override
+			   public void serialEvent(SerialPortEvent event)
+			   {
+			      if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+			         return;
+			      byte[] newData = new byte[comPort.bytesAvailable()];
+			      int numRead = comPort.readBytes(newData, newData.length);
+			      System.out.println("Read " + numRead + " bytes.");
+			      System.out.println(new String(newData));
+			   }
+			});
+		} else {
+			System.out.println("No serial port available");
+		}
 	}
 
 }
